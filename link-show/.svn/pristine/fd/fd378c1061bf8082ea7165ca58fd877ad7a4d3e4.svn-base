@@ -1,0 +1,95 @@
+<template>
+  <div class="company">
+    <div class="swiper">
+      <ul>
+        <li
+          @click="changeSlider(index)"
+          v-for="(i, index) in imagesList"
+          :style="'background:url(' + i + ') no-repeat;'"
+          :key="index"
+        ></li>
+      </ul>
+    </div>
+    <div class="swiper_slider">
+      <ul>
+        <li
+          :class="slider == index ? 'slider_active' : ''"
+          @click="changeSlider(index)"
+          v-for="(i, index) in 3"
+          :key="index"
+        ></li>
+      </ul>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  data() {
+    return {
+      slider: 0,
+      imagesList: [...Array(3)].map((i, index) => {
+        return require("../assets/images/swiper" + (index + 1) + ".jpg");
+      }),
+    };
+  },
+  mounted() {},
+  methods: {
+    changeSlider(index) {
+      var ul = document.querySelector(".swiper>ul");
+      ul.style.transform = "translateX(" + -76 * index + "vw)";
+      this.slider = index;
+      console.log(index);
+    },
+  },
+};
+</script>
+<style lang="less" scoped>
+.slider_active {
+  background-color: #fff !important;
+  transition: all 0.5s;
+}
+.company {
+  width: 100%;
+  height: 800px;
+  position: absolute;
+  overflow: hidden;
+  top: 200px;
+  .swiper {
+    width: 400vw;
+    background-color: #fff;
+    ul {
+      transition: all 0.3s;
+      li {
+        width: 66vw;
+        margin: 0 100px;
+        height: 100%;
+        min-height: 700px;
+        float: left;
+        background-color: #777;
+      }
+      li:first-child {
+        margin-left: 17vw;
+      }
+    }
+  }
+  .swiper_slider {
+    height: 50px;
+    box-sizing: border-box;
+    ul {
+      width: 225px;
+      margin: 0 auto;
+      li {
+        float: left;
+        width: 55px;
+        margin-right: 30px;
+        height: 6px;
+        background-color: #666;
+        cursor: pointer;
+      }
+      li:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}
+</style>

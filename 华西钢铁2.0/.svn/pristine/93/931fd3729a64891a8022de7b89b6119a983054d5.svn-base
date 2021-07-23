@@ -1,0 +1,63 @@
+<template>
+  <div class="home">
+    <div class="home_left"></div>
+    <div class="home_right"></div>
+    <div class="home_right_huaxigangtie">
+      <router-link to="/product/scene/three"></router-link>
+    </div>
+  </div>
+</template>
+<script lang="ts">
+import { defineComponent } from "vue";
+
+export default defineComponent({
+  data() {
+    return {};
+  },
+  mounted() {},
+  methods: {
+    initScene() {},
+  },
+});
+</script>
+<style lang="less" scoped>
+.home {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  color: white;
+  .home_left {
+    width: 24.74%;
+    height: 85.3%;
+    left: 3.22%;
+    top: 11.38%;
+    position: absolute;
+    background: url("../../assets/images/home_left.png") no-repeat;
+    background-size: 100% 100%;
+  }
+  .home_right {
+    left: 33.94%;
+    top: 18.4%;
+    width: 1100px;
+    height: 747px;
+    position: absolute;
+    background: url("../../assets/images/chicken.png") no-repeat;
+    background-size: 100% 100%;
+  }
+  .home_right_huaxigangtie {
+    width: 8.91%;
+    height: 5.16%;
+    top: 63.29%;
+    left: 79.88%;
+    position: absolute;
+    z-index: 10000;
+    background: url("../../assets/images/huaxigangtie.png") no-repeat;
+    background-size: 100% 100%;
+    a {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+</style>

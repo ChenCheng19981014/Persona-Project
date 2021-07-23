@@ -1,0 +1,81 @@
+<template>
+  <div class="product">
+    <tab></tab>
+    <router-view v-slot="{ Component }">
+      <component v-if="!$route.meta.keep" :is="Component" />
+      <keep-alive>
+        <component v-if="$route.meta.keep" :is="Component" />
+      </keep-alive>
+    </router-view>
+    <!-- 引入一个组件 -->
+    <echartNode ref="echarts" />
+  </div>
+</template>
+<script>
+import { defineAsyncComponent } from "vue";
+import echartNode from "../../components/product/echarts";
+
+const tab = defineAsyncComponent(() => import("../../components/product/tab"));
+export default {
+  components: {
+    tab,
+    echartNode,
+  },
+  data() {
+    return {
+      isflag: 0,
+      showEcharts: true,
+    };
+  },
+  mounted() {
+    this.isLoad();
+    this.showEcharts = false;
+  },
+  methods: {
+    isLoad() {
+      // 这边一直异步到 场景加载完毕判断为true 执行判断
+      let timer = setInterval(() => {
+        console.log(this.$store.state.isLoad, "this.$store.state.isLoad");
+        if (this.$store.state.isLoad) {
+          clearInterval(timer);
+          if (this.$route.fullPath == "/product/scene/manage/video") {
+            this.$Bus.$emit("initCamera");
+          } else if (
+            this.$route.fullPath == "/product/scene/manage/Environmental"
+          ) {
+            this.$Bus.$emit("initmonitor");
+          }
+        }
+      }, 500);
+    },
+  },
+
+  watch: {
+    $route: function(ne, old) {
+      if (ne.fullPath === "/product/scene/three") {
+        this.$Bus.$emit("initSprite");
+      } else if (ne.fullPath === "/product/scene/manage/video") {
+        this.$Bus.$emit("initCamera");
+      } else if (ne.fullPath === "/product/scene/manage/Environmental") {
+        this.$Bus.$emit("initmonitor");
+      }
+
+      this.showEcharts = false;
+
+      if (ne.fullPath == "/product/data") {
+        this.showEcharts = true;
+        setTimeout(() => {
+          this.$refs.echarts.initEcharts();
+        });
+      }
+    },
+  },
+};
+</script>
+<style lang="less" scoped>
+.product {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+</style>

@@ -1,0 +1,29 @@
+stages:
+  - build
+  - deploy
+variables:
+  deploy_path: /var/www/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+  runner_path: /var/www/nginx/$CI_PROJECT_NAME
+# jobs
+build-tags:
+  stage: build
+  script:
+    - if [ ! -d $deploy_path ]; then
+      git clone git@$gitlab_url:$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME.git $deploy_path;
+      mkdir -p $runner_path;
+      cd $deploy_path;
+      git checkout -b develop origin/develop;
+      fi
+    - cd $deploy_path
+    - git pull
+  only:
+    - develop
+deploy-tags:
+  stage: deploy
+  script:
+    - cd $deploy_path
+    - npm install
+    - npm run build
+    - cd dist && cp -rf * $runner_path
+  only:
+    - develop

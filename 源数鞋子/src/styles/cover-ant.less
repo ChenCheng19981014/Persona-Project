@@ -1,0 +1,118 @@
+@import "~@/styles/variables.less";
+
+// 数据列表 样式
+.table-alert {
+    margin-bottom: 16px;
+  }
+  // 数据列表 操作
+  .table-operator {
+    margin-bottom: 18px;
+  
+    button {
+      margin-right: 8px;
+    }
+  }
+  // 数据列表 搜索条件
+  .table-page-search-wrapper {
+  
+    .ant-form-inline {
+      .ant-form-item {
+        display: flex;
+        margin-bottom: 24px;
+        margin-right: 0;
+  
+        .ant-form-item-control-wrapper {
+          flex: 1 1;
+          display: inline-block;
+          vertical-align: middle;
+        }
+  
+        > .ant-form-item-label {
+          line-height: 32px;
+          padding-right: 8px;
+          width: auto;
+        }
+        .ant-form-item-control {
+          height: 32px;
+          line-height: 32px;
+        }
+      }
+    }
+  
+    .table-page-search-submitButtons {
+      display: block;
+      margin-bottom: 24px;
+      white-space: nowrap;
+    }
+  }
+
+// laytout样式覆盖
+  // .ant-layout-sider-collapsed{
+  //   min-width: 60px !important;
+  //   max-width:60px !important
+  // }
+  .ant-pro-basicLayout-content{
+    margin: 10px 10px 10px 0;
+  }
+  .ant-pro-basicLayout-children-content-wrap {
+      height: 100%;
+  }
+  .ant-pro-grid-content {
+      display: flex;
+      flex-direction: column;
+  }
+
+
+// table样式覆盖
+.ant-table-thead > tr > th{
+  background:#f2f2f2
+}
+.ant-table-tbody > tr.ant-table-row-selected td{
+  background:#E2F5FF
+}
+.ant-table-tbody > tr > td.ant-table-column-sort{
+  background:none;
+}
+.ant-table-tbody > tr.ant-table-row-selected > td.ant-table-column-sort{
+  background:#E2F5FF;
+}
+.ant-table-tbody > tr:hover.ant-table-row-selected > td {
+  background: none;
+}
+.ant-table-empty .ant-table-body {
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+}
+
+// botton样式覆盖
+.ant-btn[disabled]{
+  &:hover{
+    color:rgba(0, 0, 0, 0.25) !important;
+    border-color:#d9d9d9 !important
+  }
+}
+.ant-table-row-expand-icon {
+  // color: #666 !important
+}
+
+// form样式覆盖
+.ant-form-item-label{
+  word-break:break-all
+}
+
+.ant-input[disabled],.ant-select-disabled{
+  color: #333;
+  background: #f2f2f2;
+  
+}
+
+// tree样式覆盖
+.ant-tree.ant-tree-directory > li.ant-tree-treenode-selected > span.ant-tree-node-content-wrapper::before, .ant-tree.ant-tree-directory .ant-tree-child-tree > li.ant-tree-treenode-selected > span.ant-tree-node-content-wrapper::before {
+  background: #e6f7ff !important;
+}
+.ant-tree.ant-tree-directory > li span.ant-tree-node-content-wrapper.ant-tree-node-selected, .ant-tree.ant-tree-directory .ant-tree-child-tree > li span.ant-tree-node-content-wrapper.ant-tree-node-selected {
+  color: #17a8ff !important;
+}
+.ant-tree.ant-tree-directory > li.ant-tree-treenode-selected > span.ant-tree-switcher, .ant-tree.ant-tree-directory .ant-tree-child-tree > li.ant-tree-treenode-selected > span.ant-tree-switcher {
+  color: #17a8ff !important;
+}

@@ -1,0 +1,13 @@
+// 声明类
+export class ChangeInterface {
+  constructor(assets) {
+    this.fn = new ChangeFn(assets);
+    this.bshow = false;
+  }
+  change() {}
+  add() {}
+}
+// 声明构造函数
+var ChangeFn = function(assets) {
+  let { camera, controls, scene } = assets;
+};

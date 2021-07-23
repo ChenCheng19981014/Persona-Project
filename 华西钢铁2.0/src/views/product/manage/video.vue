@@ -1,0 +1,60 @@
+<template>
+  <div class="video">
+    <div class="video_right">
+      <div class="video_right_one"></div>
+      <div class="video_right_two"></div>
+      <div class="video_right_three"></div>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  data() {
+    return {};
+  },
+  mounted() {},
+  methods: {},
+};
+</script>
+<style lang="less" scoped>
+.video {
+  top: 11.15%;
+  left: 77.23%;
+  width: 20.23%;
+  height: 827px;
+  position: absolute;
+  // border: 1px solid red;
+  .video_right {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    // border: 1px solid red;
+    background: url("../../../assets/images/camera_right-1.png") no-repeat;
+    background-size: 100% 100%;
+    .w {
+      width: 348px;
+      height: 220px;
+      left: 25px;
+      position: absolute;
+    }
+    .video_right_one {
+      .w;
+      top: 45px;
+      background: url("../../../assets/images/camera1.jpg") no-repeat;
+      background-size: 100% 100%;
+    }
+    .video_right_two {
+      .w;
+      top: 325px;
+      background: url("../../../assets/images/camera2.jpg") no-repeat;
+      background-size: 100% 100%;
+    }
+    .video_right_three {
+      .w;
+      top: 605px;
+      background: url("../../../assets/images/camera3.jpg") no-repeat;
+      background-size: 100% 100%;
+    }
+  }
+}
+</style>

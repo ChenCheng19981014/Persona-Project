@@ -1,0 +1,22 @@
+import { createStore } from 'vuex'
+
+export default createStore({
+  state: {
+    isLoad: false,
+    aa:'aa'
+  },
+  mutations: {
+    changeLoad(state, flag) {
+      state.isLoad = flag;
+    },
+    changeaa(state,data){
+      state.aa =`${data}`
+      console.log(state.aa,'change');
+      
+    }
+  },
+  actions: {
+  },
+  modules: {
+  }
+})

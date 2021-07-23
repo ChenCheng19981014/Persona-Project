@@ -1,0 +1,184 @@
+@import '~ant-design-vue/es/style/themes/default.less';
+@import './styles/cover-ant.less';
+
+html,
+body,
+#app, #root {
+  height: 100%;
+}
+
+.colorWeak {
+  filter: invert(80%);
+}
+
+.ant-layout.layout-basic {
+  height: 100vh;
+  min-height: 100vh;
+}
+
+canvas {
+  display: block;
+}
+
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+ul,
+ol {
+  // list-style: none;
+}
+
+
+@media (max-width: @screen-xs) {
+  .ant-table {
+    width: 100%;
+    overflow-x: auto;
+    &-thead > tr,
+    &-tbody > tr {
+      > th,
+      > td {
+        white-space: pre;
+        > span {
+          display: block;
+        }
+      }
+    }
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+.full-height {
+  height: 100%;
+}
+.btn-icon-size {
+  font-size:18px;
+}
+.btn-search-icon-size{
+  font-size: 22px;
+}
+.flex{
+  display:flex
+}
+.flex-column{
+  flex-direction:column
+}
+.flex-wrap{
+  flex-wrap: wrap;
+}
+.align-center{
+  align-items: center
+}
+.justify-center{
+  justify-content: center
+}
+.justify-between{
+  justify-content: space-between
+}
+.justify-end{
+  justify-content: flex-end
+}
+.text-center{
+  text-align: center
+}
+.text-right{
+  text-align: right;
+}
+.margin-bottom-xs{
+  margin-bottom: 10px;
+}
+.margin-bottom{
+  margin-bottom: 20px;
+}
+.margin-top{
+  margin-top: 20px;
+}
+.margin-right-xs{
+  margin-right: 10px
+}
+.margin-right-xxs{
+  margin-right: 5px
+}
+.margin-right{
+  margin-right: 20px
+}
+.margin-right-lg{
+  margin-right:50px
+}
+.margin-left-xxs{
+  margin-left: 5px
+}
+.padding{
+  padding:15px
+}
+
+.page-title{
+  font-size:16px;
+  font-weight: bold;
+}
+.text-blue{
+  color: #3177A1
+}
+.text-gray{
+  color: #949494
+}
+.text-black{
+  color: #000000
+}
+.bg-white{
+  background-color:#fff
+}
+.operationIcon{
+  width: 16px;
+  margin-right: 5px;
+}
+.btn-box{
+  padding: 14px 0;
+  // box-shadow:2px 2px 4px 0px rgba(0, 0, 0, 0.1);
+}
+.operation-box{
+  display:flex;
+  justify-content:flex-end;
+}
+.folder-tree-action{
+  font-size: 26px;
+  .ant-btn{
+    padding:0;
+    font-size: 26px;
+    border: none;
+    &:hover{
+      border: none;
+    }
+  }
+}
+
+.max-modal-height{
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+@media screen and (max-width:1280px) {
+  .search-area {
+    width: 400px;
+  }
+}
+
+/* 浏览器滚动条样式 */
+
+&::-webkit-scrollbar {
+  width: 8px; /*高宽分别对应横竖滚动条的尺寸*/
+  height: 8px;
+}
+&::-webkit-scrollbar-thumb {
+  border-radius: 6px;
+  background: rgba(144, 147, 153, 0.5);
+  // background:none;
+}
+&::-webkit-scrollbar-track {
+  border-radius: 5px;
+  background: transparent;
+}

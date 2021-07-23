@@ -1,0 +1,183 @@
+<template>
+  <div class="tab">
+    <div v-if="selectedIndex <= 1" class="tab0">
+      <ul>
+        <li
+          @click="selectedIndex = index"
+          v-for="(i, index) in tabList"
+          :key="index"
+          :style="
+            'background:url(' +
+              (selectedIndex == index ? i.activeImg : i.img) +
+              ')no-repeat !important;background-size: 100% 100% !important;'
+          "
+        >
+          <router-link :to="{ name: i.route }"> </router-link>
+        </li>
+      </ul>
+    </div>
+    <div v-else class="tab1">
+      <ul>
+        <li
+          @click="selectedIndex = index"
+          v-for="(i, index) in tabList"
+          :key="index"
+          :style="
+            'background:url(' +
+              (selectedIndex == index ? i.activeImg2 : i.img2) +
+              ')no-repeat !important;background-size: 100% 100% !important;'
+          "
+        >
+          <router-link :to="{ name: i.route }"> </router-link>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  data() {
+    return {
+      tabList: this.initTabList(),
+      selectedIndex: 0,
+    };
+  },
+  mounted() {
+    this.inintOrde();
+  },
+  methods: {
+    initTabList() {
+      let list = [
+        {
+          img: "",
+          activeImg: "",
+          name: "3D",
+          route: "three",
+          img2: "",
+          activeImg2: "",
+        },
+        {
+          img: "",
+          activeImg: "",
+          name: "监控管理",
+          route: "manage",
+          img2: "",
+          activeImg2: "",
+        },
+        {
+          img: "",
+          activeImg: "",
+          name: "数据分析",
+          route: "data",
+          img2: "",
+          activeImg2: "",
+        },
+        {
+          img: "",
+          activeImg: "",
+          name: "资产库-设备",
+          route: "pool",
+          img2: "",
+          activeImg2: "",
+        },
+      ];
+      for (let index = 0; index < 4; index++) {
+        list[index].img = require("../../assets/images/tab" +
+          (index + 1) +
+          ".png");
+        list[index].activeImg = require("../../assets/images/tab00" +
+          (index + 1) +
+          ".png");
+        list[index].img2 = require("../../assets/images/newtab" +
+          (index + 1) +
+          ".png");
+        list[index].activeImg2 = require("../../assets/images/newtab00" +
+          (index + 1) +
+          ".png");
+      }
+      return list;
+    },
+    inintOrde() {
+      this.selectedIndex = this.tabList.findIndex(
+        (i) => this.$route.fullPath.indexOf(i.route) !== -1
+      );
+    },
+  },
+  watch: {
+    $route(val, oldval) {
+      this.inintOrde();
+    },
+  },
+};
+</script>
+<style lang="less" scoped>
+.selectedindex {
+  background-color: #fff;
+}
+.tab {
+  z-index: 1000;
+  .tab0 {
+    left: 3.27%;
+    top: 17.5%;
+    width: 138px;
+    height: 374px;
+    position: absolute;
+    color: white;
+    z-index: 100;
+    // border: 1px solid red;
+    ul {
+      width: 100%;
+      height: 100%;
+      flex: 1;
+      flex-direction: column;
+      li {
+        display: flex;
+        margin-top: 33px;
+        height: 68px;
+        // background-color: pink;
+        // border: 1px solid rgb(12, 142, 217);
+        a {
+          display: block;
+          width: 100%;
+          height: 68px;
+        }
+      }
+      li:nth-child(1) {
+        margin-top: 0px;
+      }
+    }
+  }
+  .tab1 {
+    left: 21.59%;
+    bottom: 74px;
+    width: 1097px;
+    height: 46px;
+    position: absolute;
+    color: white;
+    z-index: 100;
+    // border: 1px solid red;
+    ul {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      // border: 1px solid red;
+      // flex-direction: column;
+      li {
+        flex: 1;
+        max-width: 166px;
+        min-height: 46px;
+        margin-left: 147px;
+        // border: 1px solid rgb(12, 142, 217);
+        a {
+          display: block;
+          width: 100%;
+          height: 46px;
+        }
+      }
+      li:nth-child(1) {
+        margin-left: 0px;
+      }
+    }
+  }
+}
+</style>

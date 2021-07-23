@@ -1,0 +1,376 @@
+import { Vector3 } from "three";
+import Public from "./Pubilc";
+// 声明类
+export class ChangeInterface extends Public {
+  constructor(assets) {
+    super(assets);
+    this.fn = new ChangeFn(assets);
+  }
+  change() {
+    // this.CameraAnimate([97.38, 51.04, -112], [3.03, -3, -6.8], 3);
+    // this.fn.truckMoving();
+    this.fn.drive();
+    this.fn.hideSprite();
+    // this.fn.monitor();
+    // this.fn.showCamera();
+  }
+  add() {
+    document.body.addEventListener("dblclick", (e) => {
+      //   this.fn.initCameraPosition();
+      this.fn.showSprite(e);
+      console.log("ok");
+    });
+  }
+}
+// 声明构造函数
+var ChangeFn = function(assets) {
+  let { camera, controls, scene, renderer, events, dispatch } = assets;
+  let prevTime;
+  var flag = true;
+  var hideList = [];
+  this.drivableTruck = null;
+  this.progress = 0;
+  this.curve = null;
+  this.hideSprite = () => {
+    scene.traverse((i, index) => {
+      if (
+        i.name === "ggaolu1" ||
+        i.name === "gjiankong1" ||
+        i.name === "gjiankong001" ||
+        i.name === "gdianhuolu01" ||
+        i.name === "gjiance1" ||
+        i.name === "gjiance001" ||
+        i.name === "gjiankong002" ||
+        i.name === "gjiance2" ||
+        i.name === "gliaochang01" ||
+        i.name === "gjiankong3" ||
+        i.name === "gjiankong003" ||
+        i.name === "gshuichuli1" ||
+        i.name === "gqushuidian1" ||
+        i.name === "gjiance3" ||
+        i.name === "gpeiliao02" ||
+        i.name === "gpeiliao01" ||
+        i.name === "gjiance003" ||
+        i.name === "gjiance002" ||
+        i.name === "gjiankong2"
+      ) {
+        i.visible = false;
+      } else if (
+        i.name === "ggaolu" ||
+        i.name === "gshuichuli" ||
+        i.name === "gqushuidian" ||
+        i.name === "gerpei" ||
+        i.name === "gdianhuolu" ||
+        i.name === "gliaochang" ||
+        i.name === "gyipei"
+      ) {
+        i.visible = true;
+      }
+    });
+  };
+  this.monitor = () => {
+    scene.traverse((i, index) => {
+      if (
+        i.name === "gjiance3" ||
+        i.name === "gjiance2" ||
+        i.name === "gjiance1"
+      ) {
+        i.visible = true;
+      } else if (
+        i.name === "ggaolu1" ||
+        i.name === "gjiankong1" ||
+        i.name === "gjiankong001" ||
+        i.name === "gdianhuolu01" ||
+        i.name === "gjiance1" ||
+        i.name === "gjiance001" ||
+        i.name === "gjiankong002" ||
+        i.name === "gjiance2" ||
+        i.name === "gliaochang01" ||
+        i.name === "gjiankong3" ||
+        i.name === "gjiankong003" ||
+        i.name === "gshuichuli1" ||
+        i.name === "gqushuidian1" ||
+        i.name === "gjiance3" ||
+        i.name === "gpeiliao02" ||
+        i.name === "gpeiliao01" ||
+        i.name === "gjiance003" ||
+        i.name === "gjiance002" ||
+        i.name === "ggaolu" ||
+        i.name === "gdianhuolu" ||
+        i.name === "gshuichuli" ||
+        i.name === "gqushuidian" ||
+        i.name === "gerpei" ||
+        i.name === "gliaochang" ||
+        i.name === "gyipei" ||
+        i.name === "gjiankong2"
+      ) {
+        i.visible = false;
+      }
+    });
+  };
+  this.showCamera = () => {
+    scene.traverse((i, index) => {
+      if (
+        i.name === "gjiankong1" ||
+        i.name === "gjiankong2" ||
+        i.name === "gjiankong3"
+      ) {
+        i.visible = true;
+      } else if (
+        i.name === "ggaolu1" ||
+        i.name === "gjiankong1" ||
+        i.name === "gjiankong001" ||
+        i.name === "gdianhuolu01" ||
+        i.name === "gjiance1" ||
+        i.name === "gjiance001" ||
+        i.name === "gjiankong002" ||
+        i.name === "gjiance2" ||
+        i.name === "gliaochang01" ||
+        i.name === "gjiankong3" ||
+        i.name === "gjiankong003" ||
+        i.name === "gshuichuli1" ||
+        i.name === "gqushuidian1" ||
+        i.name === "gjiance3" ||
+        i.name === "gpeiliao02" ||
+        i.name === "gpeiliao01" ||
+        i.name === "gjiance003" ||
+        i.name === "gjiance002" ||
+        i.name === "ggaolu" ||
+        i.name === "gdianhuolu" ||
+        i.name === "gshuichuli" ||
+        i.name === "gqushuidian" ||
+        i.name === "gerpei" ||
+        i.name === "gliaochang" ||
+        i.name === "gyipei"
+      ) {
+        i.visible = false;
+      }
+    });
+  };
+  this.initCameraPosition = () => {
+    // console.log(camera.position, "camera.position");
+    // console.log(controls.target, "controls.target");
+    // camera.position.set(97.38, 51.04, -112);
+    // controls.target.set(3.03, -3, -6.8);
+  };
+  this.drive = () => {
+    /*let path = scene.getObjectByName('path');
+    let initialPoints = [];
+    for(let child of path.children)
+    {
+      initialPoints.push(new THREE.Vector3(child.position.x, child.position.y, child.position.z));
+    }*/
+    let path = scene.getObjectByName("path2");
+    console.log(path, "path");
+    let initialPoints = [];
+    for (let child of path.children) {
+      initialPoints.push(
+        new THREE.Vector3(child.position.x, child.position.y, child.position.z)
+      );
+    }
+    for (let i = path.children.length - 1; i > 0; i--) {
+      let child = path.children[i];
+      initialPoints.push(
+        new THREE.Vector3(child.position.x, child.position.y, child.position.z)
+      );
+    }
+    console.log(initialPoints);
+    this.curve = new THREE.CatmullRomCurve3(
+      initialPoints,
+      "true",
+      "catmullrom",
+      0.1
+    );
+    const points = this.curve.getPoints(500);
+
+    const line = new THREE.LineLoop(
+      new THREE.BufferGeometry().setFromPoints(points),
+      new THREE.LineBasicMaterial({ color: 0x00ff00 })
+    );
+    //line.position.y += 5;
+    scene.add(line);
+
+    this.drivableTruck = scene.getObjectByName("drivableTruck");
+  };
+  this.animation = () => {
+    let time = performance.now();
+    try {
+      dispatch(events.update, { time: time, delta: time - prevTime });
+    } catch (e) {
+      console.error(e.message || e, e.stack || "");
+    }
+    //动画更新
+    if (controls) controls.update();
+    // if (scene.mixer && scene.clock) scene.mixer.update(scene.clock.getDelta());
+    prevTime = time;
+
+    if (this.progress > 1.0) {
+      this.progress -= 1.0;
+    }
+    this.progress += 0.0001;
+    if (this.curve && this.drivableTruck) {
+      let point = this.curve.getPoint(this.progress);
+      if (point && point.x) {
+        this.drivableTruck.position.set(point.x, point.y, point.z);
+      }
+      let point2 = this.curve.getPoint(this.progress + 0.0001);
+      if (point2 && point2.x) {
+        this.drivableTruck.lookAt(point2);
+        this.drivableTruck.rotateY(-Math.PI / 2);
+      }
+    }
+
+    //渲染
+    if (window.bloomComposer) {
+      window.bloomComposer.render(scene, camera);
+    } else {
+      renderer.render(scene, camera);
+    }
+  };
+  this.showSprite = (event) => {
+    var raycaster = new THREE.Raycaster();
+    var mouse = new THREE.Vector2();
+    event.preventDefault();
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    var intersects = raycaster.intersectObjects(scene.children, true);
+    var ggaolu1 = scene.getObjectByName("ggaolu1");
+    var gdianhuolu01 = scene.getObjectByName("gdianhuolu01");
+    var gliaochang01 = scene.getObjectByName("gliaochang01");
+    var gshuichuli1 = scene.getObjectByName("gshuichuli1");
+    var gpeiliao02 = scene.getObjectByName("gpeiliao02");
+    var gpeiliao01 = scene.getObjectByName("gpeiliao01");
+    var gqushuidian1 = scene.getObjectByName("gqushuidian1");
+    var gjiankong001 = scene.getObjectByName("gjiankong001");
+    var gjiankong002 = scene.getObjectByName("gjiankong002");
+    var gjiankong003 = scene.getObjectByName("gjiankong003");
+    var gjiance003 = scene.getObjectByName("gjiance003");
+    var gjiance002 = scene.getObjectByName("gjiance002");
+    var gjiance001 = scene.getObjectByName("gjiance001");
+
+    if (intersects[0].object.name == "ggaolu") {
+      ggaolu1.visible = flag;
+      flag = !flag;
+    } else if (intersects[0].object.name == "gdianhuolu") {
+      gdianhuolu01.visible = flag;
+      flag = !flag;
+    } else if (intersects[0].object.name == "gliaochang") {
+      gliaochang01.visible = flag;
+      flag = !flag;
+    } else if (intersects[0].object.name == "gshuichuli") {
+      gshuichuli1.visible = flag;
+      flag = !flag;
+    } else if (intersects[0].object.name == "gerpei") {
+      gpeiliao02.visible = flag;
+      flag = !flag;
+    } else if (intersects[0].object.name == "gyipei") {
+      gpeiliao01.visible = flag;
+      flag = !flag;
+    } else if (intersects[0].object.name == "gqushuidian") {
+      gqushuidian1.visible = flag;
+      flag = !flag;
+    } else if (intersects[0].object.name == "gjiankong1") {
+      gjiankong001.visible = flag;
+      flag = !flag;
+    } else if (intersects[0].object.name == "gjiankong2") {
+      gjiankong002.visible = flag;
+      flag = !flag;
+    } else if (intersects[0].object.name == "gjiankong3") {
+      gjiankong003.visible = flag;
+      flag = !flag;
+    } else if (intersects[0].object.name == "gjiance3") {
+      gjiance003.visible = flag;
+      flag = !flag;
+    } else if (intersects[0].object.name == "gjiance2") {
+      gjiance002.visible = flag;
+      flag = !flag;
+    } else if (intersects[0].object.name == "gjiance1") {
+      gjiance001.visible = flag;
+      flag = !flag;
+    }
+  };
+  this.truckMoving = () => {
+    // console.log("ok");
+    var Truck = scene.getObjectByName("Truck");
+    // let times = [];
+
+    // for (var i in [...Array(5)]) {
+    //   times.push(i * 10);
+    //   let v3 = [i * 10, 0, i * 10];
+    // }
+    const position = {
+      begin: [-4130, 0, 0],
+      middle: [5020, 0, 0],
+      end: [5020, 0, -7878],
+    };
+    let values = [
+      ...position.begin,
+      ...position.middle,
+      ...position.end,
+      ...position.middle,
+      ...position.begin,
+    ];
+
+    // 通过类CatmullRomCurve3创建一个3D样条曲线
+    this.curve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(position.begin.x, position.begin.y, position.begin.z),
+      new THREE.Vector3(
+        position.middle.x,
+        position.middle.y,
+        position.middle.z
+      ),
+      new THREE.Vector3(position.end.x, position.end.y, position.end.z),
+      new THREE.Vector3(position.begin.x),
+      new THREE.Vector3(position.begin.x, position.begin.y, position.begin.z),
+    ]);
+    // 样条曲线均匀分割100分，返回51个顶点坐标
+    var points = this.curve.getPoints(100);
+    console.log("points", points); //控制台查看返回的顶点坐标
+    var geometry = new THREE.Geometry();
+    // 把从曲线轨迹上获得的顶点坐标赋值给几何体
+    geometry.vertices = points;
+    var material = new THREE.LineBasicMaterial({
+      color: 0x4488ff,
+    });
+    var line = new THREE.Line(geometry, material);
+    scene.add(line);
+
+    // 通过Threejs的帧动画相关API播放网格模型沿着曲线做动画运动
+
+    // 声明一个数组用于存储时间序列
+    let arr = [];
+    for (let i = 0; i < 101; i++) {
+      arr.push(i);
+    }
+    // 生成一个时间序列
+    var times = new Float32Array(arr);
+
+    var posArr = [];
+    points.forEach((elem) => {
+      posArr.push(elem.x, elem.y, elem.z);
+    });
+    // 创建一个和时间序列相对应的位置坐标系列
+    // var values = new Float32Array(posArr);
+
+    // 创建一个和时间序列相对应的位置坐标系列
+    // 创建一个帧动画的关键帧数据，曲线上的位置序列对应一个时间序列
+    var posTrack = new THREE.KeyframeTrack(".position", times, values);
+    let duration = 1000;
+    let clip = new THREE.AnimationClip("default", duration, [posTrack]);
+    var mixer = new THREE.AnimationMixer(Truck);
+    let AnimationAction = mixer.clipAction(clip);
+    AnimationAction.timeScale = 20;
+    AnimationAction.play();
+
+    var clock = new THREE.Clock(); //声明一个时钟对象
+    function render() {
+      renderer.render(scene, camera);
+      requestAnimationFrame(render);
+      // 更新帧动画的时间
+      mixer.update(clock.getDelta());
+    }
+    render();
+  };
+};
+export { ChangeFn };

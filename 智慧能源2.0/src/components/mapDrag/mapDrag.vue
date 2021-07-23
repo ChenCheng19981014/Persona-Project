@@ -1,0 +1,396 @@
+<!--
+  描述：拖放地图组件，默认尺寸是 500 * 300
+
+  接收属性参数：
+    lat: 纬度
+    lng: 经度
+
+  自定义事件：
+    drag: 拖放完成事件
+
+  示例：
+    <mapDrag @drag="dragMap" lat="22.574405" lng="114.095388"></mapDrag>
+-->
+<template>
+  <div class="m-map">
+    <div id="js-container" class="map">正在加载数据 ...</div>
+  </div>
+</template>
+
+<script>
+import remoteLoad from "../../../utils/remoteLoad.js";
+import { MapKey, MapCityName } from "../../../config/config.js";
+export default {
+  props: ["lat", "lng"],
+  data() {
+    return {};
+  },
+  watch: {
+    searchKey() {
+      if (this.searchKey === "") {
+        this.placeSearch.clear();
+      }
+    },
+  },
+  methods: {
+    // 搜索
+    handleSearch() {
+      if (this.searchKey) {
+        this.placeSearch.search(this.searchKey);
+      }
+    },
+    // 实例化地图
+    initMap() {
+      // 加载PositionPicker，loadUI的路径参数为模块名中 'ui/' 之后的部分
+      let AMapUI = (this.AMapUI = window.AMapUI);
+      let AMap = (this.AMap = window.AMap);
+      AMapUI.loadUI(["misc/PositionPicker"], (PositionPicker) => {
+        let mapConfig = {
+          zoom: 4,
+          cityName: MapCityName,
+          mapStyle: "amap://styles/df318d11bb71c51f513b17c001dd6877",
+          showIndoorMap: true, // 是否在有矢量底图的时候自动展示室内地图，PC默认true,移动端默认false
+          resizeEnable: true, //是否监控地图容器尺寸变化，默认值为false
+          dragEnable: true, // 地图是否可通过鼠标拖拽平移，默认为true
+          keyboardEnable: true, //地图是否可通过键盘控制，默认为true
+          doubleClickZoom: true, // 地图是否可通过双击鼠标放大地图，默认为true
+          zoomEnable: true, //地图是否可缩放，默认值为true
+          rotateEnable: true, // 地图是否可旋转，3D视图默认为true，2D视图默认false
+        };
+        mapConfig.center = [120, 30];
+        let map = new AMap.Map("js-container", mapConfig);
+
+        /*var marker = new AMap.Marker({
+          icon:"https://test-1303915342.cos.ap-nanjing.myqcloud.com/nengyuan/blue.png",
+          position:[119.8, 31.9]
+        });*/
+
+        //window.location = 'http://localhost:8080/#/park/data';
+        var capitals = [
+          {
+            citycode: "010",
+            adcode: "110000",
+            name: "北京市",
+            center: [116.407394, 39.904211],
+          },
+          {
+            citycode: "023",
+            adcode: "500000",
+            name: "重庆市",
+            center: [106.551643, 29.562849],
+          },
+          {
+            citycode: "1853",
+            adcode: "820000",
+            name: "澳门特别行政区",
+            center: [113.543028, 22.186835],
+          },
+          {
+            name: "华盛顿",
+            center: [257.02, 38.54],
+          },
+          {
+            name: "伦敦",
+            center: [0, 51.3],
+          },
+          {
+            name: "巴黎",
+            center: [2.2, 48.52],
+          },
+          {
+            name: "东京",
+            center: [139.46, 35.42],
+          },
+          // {
+          //   name: "巴格达",
+          //   center: [44.25, 33.2],
+          // },
+          {
+            name: "新加坡",
+            center: [103.51, 1.17],
+          },
+          {
+            name: "堪培拉",
+            center: [149.08, -35.17],
+          },
+          {
+            name: "巴西利亚",
+            center: [-48.1, -16.05],
+          },
+          {
+            name: "斯艾利斯",
+            center: [240, 33.29],
+          },
+        ];
+        var infoWindow;
+        var div;
+        for (let i = 0; i < capitals.length; i++) {
+          let colorFactor = Math.random();
+          console.log(colorFactor);
+          let color;
+          if (colorFactor < 0.33) color = "#ff0000";
+          else if (colorFactor > 0.66) color = "#0000ff";
+          else color = "#00ffff";
+          //城市1
+          let marker = new AMap.Circle({
+            map: map,
+            center: capitals[i].center,
+            radius: 30000,
+            fillColor: color,
+            strokeColor: color,
+            strokeOpacity: 1.0,
+            cursor: "pointer",
+          });
+          marker.on("click", function() {
+            // 设置鼠标划过点标记显示的文字提示
+            window.location = "http://localhost:8080/#/park/scene/three";
+          });
+          marker.on("mouseover", function() {
+            //构建信息窗体中显示的内容
+            div = document.querySelector(".moreinfo");
+            div.style.display = "";
+          });
+          marker.on("mouseout", function() {
+            div.style = "display:none";
+          });
+        }
+
+        AMapUI.loadUI(["overlay/SimpleMarker"], function(SimpleMarker) {
+          for (let i = 0; i < capitals.length; i++) {
+            new SimpleMarker({
+              iconLabel: {
+                innerHTML: "<div>" + capitals[i].name + "光伏电站</div>",
+                style: {
+                  color: "white", //设置文字颜色
+                  width: "150px",
+                  height: "24px",
+                  //border: '1px solid #FFFFFF',
+                  //background: 'linear-gradient(0deg, rgba(21, 28, 43, 0.6) 0%, rgba(21, 28, 43, 0.6) 100%)',
+                  //'letter-spacing': '0.2rem',
+                  //'font-weight': '400',
+                  "font-family": "SimHei",
+                  "font-size": "8px",
+                  "line-height": "24px",
+                  "background-image":
+                    "url(https://test-1303915342.cos.ap-nanjing.myqcloud.com/nengyuan/kuang1.png)",
+                  "background-repeat": "no-repeat",
+                  "background-size": "100% 100%",
+                },
+              },
+              //自定义图标地址
+              iconStyle: "",
+              showPositionPoint: false,
+              //设置基点偏移
+              offset: new AMap.Pixel(-70, 20),
+              map: map,
+              showPositionPoint: {
+                color: "white", //点的颜色
+                radius: 0, //点的半径。 因圆形使用了CSS3的border-radius属性，IE8及以下浏览器会呈现正方形
+              },
+              position: capitals[i].center,
+              zIndex: 100,
+            });
+          }
+
+          /*new SimpleMarker({
+                iconLabel: {
+                  innerHTML: '<div>国家1</div>',
+                  style: {
+                      color:'white',//设置文字颜色
+                      width: '72px',
+                      height: '30px',
+                      border: '1px solid #FFFFFF',
+                      background: 'linear-gradient(0deg, rgba(21, 28, 43, 0.6) 0%, rgba(21, 28, 43, 0.6) 100%)',
+                      'letter-spacing': '0.2rem',
+                      'font-weight': '400',
+                      'font-family': "SimHei",
+                      'font-size': '17px'
+                      
+                  }
+                },
+                //自定义图标地址
+                iconStyle: '',
+                showPositionPoint:false,
+                //设置基点偏移
+                offset: new AMap.Pixel(0,0),
+                map: map,
+                showPositionPoint: {
+                  color: 'white',//点的颜色
+                  radius: 0 //点的半径。 因圆形使用了CSS3的border-radius属性，IE8及以下浏览器会呈现正方形
+                },
+                position: [140,35],
+                zIndex: 100
+            });
+            new SimpleMarker({
+                iconLabel: {
+                  innerHTML: '<div>国家2</div>',
+                  style: {
+                      color:'white',//设置文字颜色
+                      width: '72px',
+                      height: '30px',
+                      border: '1px solid #FFFFFF',
+                      background: 'linear-gradient(0deg, rgba(21, 28, 43, 0.6) 0%, rgba(21, 28, 43, 0.6) 100%)',
+                      'letter-spacing': '0.2rem',
+                      'font-weight': '400',
+                      'font-family': "SimHei",
+                      'font-size': '17px'
+                      
+                  }
+                },
+                //自定义图标地址
+                iconStyle: '',
+                showPositionPoint:false,
+                //设置基点偏移
+                offset: new AMap.Pixel(0,0),
+                map: map,
+                showPositionPoint: {
+                  color: 'white',//点的颜色
+                  radius: 0 //点的半径。 因圆形使用了CSS3的border-radius属性，IE8及以下浏览器会呈现正方形
+                },
+                position: [250,35],
+                zIndex: 100
+            });            
+            new SimpleMarker({
+                iconLabel: {
+                  innerHTML: '<div>国家3</div>',
+                  style: {
+                      color:'white',//设置文字颜色
+                      width: '72px',
+                      height: '30px',
+                      border: '1px solid #FFFFFF',
+                      background: 'linear-gradient(0deg, rgba(21, 28, 43, 0.6) 0%, rgba(21, 28, 43, 0.6) 100%)',
+                      'letter-spacing': '0.2rem',
+                      'font-weight': '400',
+                      'font-family': "SimHei",
+                      'font-size': '17px'
+                      
+                  }
+                },
+                //自定义图标地址
+                iconStyle: '',
+                showPositionPoint:false,
+                //设置基点偏移
+                offset: new AMap.Pixel(0,0),
+                map: map,
+                showPositionPoint: {
+                  color: 'white',//点的颜色
+                  radius: 0 //点的半径。 因圆形使用了CSS3的border-radius属性，IE8及以下浏览器会呈现正方形
+                },
+                position: [120,60],
+                zIndex: 100
+            });   */
+        });
+
+        /**
+     * 返回一批网格排列的经纬度
+
+     * @param  {AMap.LngLat} center 网格中心
+     * @param  {number} colNum 列数
+     * @param  {number} size  总数
+     * @param  {number} cellX  横向间距
+     * @param  {number} cellY  竖向间距
+     * @return {Array}  返回经纬度数组
+     */
+        function getGridLngLats(center, colNum, size, cellX, cellY) {
+          var pxCenter = map.lnglatToPixel(center);
+          var rowNum = Math.ceil(size / colNum);
+          var startX = pxCenter.getX(),
+            startY = pxCenter.getY();
+          cellX = cellX || 70;
+          cellY = cellY || 70;
+          var lngLats = [];
+          for (var r = 0; r < rowNum; r++) {
+            for (var c = 0; c < colNum; c++) {
+              var x = startX + (c - (colNum - 1) / 2) * cellX;
+              var y = startY + (r - (rowNum - 1) / 2) * cellY;
+              lngLats.push(map.pixelToLngLat(new AMap.Pixel(x, y)));
+              if (lngLats.length >= size) {
+                break;
+              }
+            }
+          }
+          return lngLats;
+        }
+      });
+    },
+  },
+  async created() {
+    // 已载入高德地图API，则直接初始化地图
+    if (window.AMap && window.AMapUI) {
+      this.initMap();
+      // 未载入高德地图API，则先载入API再初始化
+    } else {
+      await remoteLoad(`http://webapi.amap.com/maps?v=1.4.15&key=${MapKey}`);
+      await remoteLoad("http://webapi.amap.com/ui/1.0/main.js");
+      this.initMap();
+    }
+  },
+};
+</script>
+
+<style lang="css">
+.m-map {
+  min-width: 500px;
+  min-height: 300px;
+  position: relative;
+}
+.m-map .map {
+  width: 100%;
+  height: 100%;
+}
+.m-map .search {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 285px;
+  z-index: 1;
+}
+.m-map .search input {
+  width: 180px;
+  border: 1px solid #ccc;
+  line-height: 20px;
+  padding: 5px;
+  outline: none;
+}
+.m-map .search button {
+  line-height: 26px;
+  background: #fff;
+  border: 1px solid #ccc;
+  width: 50px;
+  text-align: center;
+}
+.m-map .result {
+  max-height: 300px;
+  overflow: auto;
+  margin-top: 10px;
+}
+.info {
+  width: 200px;
+  height: 26px;
+  /* border: 0px solid #FFFFFF; */
+  background-image: url(https://test-1303915342.cos.ap-nanjing.myqcloud.com/nengyuan/kuang1.png);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  text-align: center;
+  line-height: 26px;
+}
+
+.info span {
+  font-size: 16px;
+  font-family: SimHei;
+  font-weight: 400;
+  color: #ffffff;
+}
+
+/*
+ .amap-info-close{
+  display: none;
+} 
+ .amap-info-sharp{
+  display: none;
+}  */
+.simpleMarker {
+  display: block;
+  color: #fff;
+}
+</style>

@@ -1,0 +1,467 @@
+<template>
+  <div class="introduce">
+    <div class="kanban"></div>
+    <div class="tab">
+      <ul>
+        <li
+          @click="(selectedIndex = index), changeTab(i), changeRun()"
+          v-for="(i, index) in introduceList"
+          :key="index"
+        >
+          <div v-show="selectedIndex == index"></div>
+          <i :class="'iconfont ' + i.icon"></i>
+          <strong>{{ i.name }}</strong>
+        </li>
+      </ul>
+    </div>
+    <div
+      v-show="selectedIndex == 0"
+      @click="(isRun = !isRun), changeRun()"
+      :style="
+        isRun ? 'color:rgb(76,208,248);border:2px solid rgb(68, 182, 227)' : ''
+      "
+      class="run"
+    >
+      运行
+    </div>
+    <div class="father">
+      <span class="span">100%</span>
+      <div class="son"></div>
+    </div>
+  </div>
+</template>
+<script>
+import * as THREE from "three";
+import { APP } from "../assets/scene/app.js";
+import { VRButton } from "../assets/scene/VRButton.js";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
+import { OutlinePass } from "three/examples/jsm/postprocessing/OutlinePass.js";
+import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js";
+import { AfterimagePass } from "three/examples/jsm/postprocessing/AfterimagePass.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import {
+  CSS3DRenderer,
+  CSS3DObject
+} from "three/examples/jsm/renderers/CSS3DRenderer.js";
+import { TrackballControls } from "three/examples/jsm/controls/TrackballControls.js";
+import { ChangeInterface } from "../assets/scene/Change.js";
+window.THREE = THREE; // Used by APP Scripts.
+window.VRButton = VRButton; // Used by APP Scripts.
+window.EffectComposer = EffectComposer;
+window.RenderPass = RenderPass;
+window.ShaderPass = ShaderPass;
+window.OutlinePass = OutlinePass;
+window.FXAAShader = FXAAShader;
+window.AfterimagePass = AfterimagePass;
+window.OrbitControls = OrbitControls;
+window.CSS3DRenderer = CSS3DRenderer;
+window.CSS3DObject = CSS3DObject;
+window.TrackballControls = TrackballControls;
+export default {
+  data() {
+    return {
+      introduceList: [
+        {
+          name: "产品展示",
+          icon: "iconziyuanzhuye"
+        },
+        {
+          name: "产品尺寸",
+          icon: "iconquanbu"
+        },
+        {
+          name: "部件介绍",
+          icon: "iconjieshaoxinxi"
+        },
+        {
+          name: "结构拆解",
+          icon: "iconfenjie"
+        }
+      ],
+      selectedIndex: 0,
+      boomLevel: 0,
+      boomTimer: "",
+      showRules: false,
+      isRun: false,
+      arrow: [],
+      assets: {},
+      lastSelect: "产品展示"
+    };
+  },
+  mounted() {
+    this.initScene();
+  },
+  methods: {
+    initScene() {
+      if (
+        document.querySelector(".introduce") != null &&
+        !document.querySelector(".introduce").querySelector("canvas")
+      )
+        var loader = new THREE.FileLoader();
+      loader.load(
+        this.$modelUrl,
+        text => {
+          window.player = new APP.Player();
+          player.load(JSON.parse(text));
+          player.setSize(window.innerWidth, window.innerHeight);
+          // 调用自定义的类下面的方法 change()以及add()
+          var change = new ChangeInterface(player.assets());
+          change.change();
+          change.add();
+          player.play();
+          this.assets = player.assets();
+          this.arrow = player.removeArrow();
+
+          // player.staticAssets = player.assets();
+
+          window.addEventListener("resize", function() {
+            player.setSize(window.innerWidth, window.innerHeight);
+          });
+        },
+
+        function(xhr) {
+          var div = document.querySelector(".father");
+          var diva = document.querySelector(".son");
+          var span = document.querySelector(".span");
+          var a =
+            ((xhr.loaded / xhr.total) * 100).toString().substring(0, 4) - 0;
+          if (a.toString().length < 4 && a > 10) {
+            a = a + "" + ".0";
+          }
+          if (!diva) return;
+          diva.style.width = a + "%";
+          span.innerHTML = a + "%";
+          if (a >= 100) {
+            div.remove();
+          }
+        }
+      );
+    },
+    changeTab(i) {
+      if (i.name === "结构拆解") {
+        this.isRun = false;
+
+        if (this.boomTimer) clearInterval(this.boomTimer);
+
+        this.boomTimer = setInterval(() => {
+          if (this.boomLevel > 150) return clearInterval(this.boomTimer);
+          this.boomLevel++;
+          window.player.scalarBoom(this.boomLevel);
+        }, 1);
+      } else if (i.name === "产品展示") {
+        if (this.boomTimer) clearInterval(this.boomTimer);
+        this.boomTimer = setInterval(() => {
+          if (this.boomLevel <= 0) return clearInterval(this.boomTimer);
+          this.boomLevel--;
+          window.player.scalarBoom(this.boomLevel);
+        }, 1);
+      } else if (i.name == "部件介绍") {
+        this.isRun = false;
+        this.assets.scene.getObjectByName("waike_grp").visible = false;
+        return;
+      } else if (i.name === "产品尺寸") {
+        this.isRun = false;
+      }
+      this.assets.scene.getObjectByName("waike_grp").visible = true;
+
+      if (i.name === "产品尺寸" && this.lastSelect == "产品展示") {
+        this.hideRuler(true);
+      } else {
+        this.hideRuler(false);
+      }
+      this.lastSelect = i.name;
+    },
+    hideRuler(showRules) {
+      var eleList = [".element", ".element2", ".element3", ".element4"];
+      if (!showRules) {
+        eleList.forEach(i => {
+          var a = document.querySelector(i);
+          a.classList = i.substr(1) + " none";
+        });
+      } else {
+        eleList.forEach(i => {
+          var a = document.querySelector(i);
+          a.classList = i.substr(1) + " block";
+        });
+      }
+    },
+    changeRun(state) {
+      let fengjiList = [];
+      this.assets.scene.traverse(i =>
+        i.name.indexOf("fengji") != -1 ? fengjiList.push(i) : ""
+      );
+      let rotate = () => {
+        fengjiList.forEach((i, index) => {
+          i.rotation.y += 0.2;
+        });
+        if (!this.isRun) return;
+        window.requestAnimationFrame(rotate);
+      };
+      rotate();
+
+      this.arrow.forEach((i, index) => {
+        if (this.isRun) i.visible = true;
+        else i.visible = false;
+      });
+    }
+  }
+};
+</script>
+<style>
+.none {
+  display: none !important;
+}
+.block {
+  display: block !important;
+}
+</style>
+<style lang="less">
+.run {
+  position: absolute;
+  z-index: 1000;
+  left: 100px;
+  bottom: 100px;
+  width: 100px;
+  height: 40px;
+  color: #fff;
+  text-align: center;
+  line-height: 40px;
+  border: 2px solid #fff;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.run:hover {
+}
+.introduce {
+  .element {
+    color: #fff;
+    width: 100px;
+    //height:200px;
+    position: absolute;
+    left: -21px;
+    opacity: 0.5;
+  }
+  .smallerThan {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform: translateY(0%) translateX(-100%);
+    display: block;
+  }
+  .biggerThan {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform: translateY(0%) translateX(100%);
+    //transform: translateY(-50px);
+    display: block;
+  }
+  .number {
+    position: absolute;
+    width: 100%;
+    font-size: 6px;
+    display: block;
+    transform: translateX(0%);
+  }
+
+  .element2 {
+    color: #fff;
+    width: 43px;
+    //height:200px;
+    position: absolute;
+    left: 30px;
+    opacity: 0.5;
+  }
+  .smallerThan2 {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform: translateY(0%) translateX(-100%);
+    display: block;
+  }
+  .biggerThan2 {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform: translateY(0%) translateX(100%);
+    //transform: translateY(-50px);
+    display: block;
+  }
+  .number2 {
+    position: absolute;
+    width: 100%;
+    font-size: 6px;
+    display: block;
+    transform: translateX(-25%);
+  }
+
+  .element3 {
+    color: #fff;
+    width: 60px;
+    //height:200px;
+    position: absolute;
+    left: 30px;
+    top: 65px;
+    opacity: 0.5;
+  }
+  .smallerThan3 {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform: translateY(0%) translateX(-100%);
+    display: block;
+  }
+  .biggerThan3 {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform: translateY(0%) translateX(100%);
+    //transform: translateY(-50px);
+    display: block;
+  }
+  .number3 {
+    position: absolute;
+    width: 100%;
+    transform: rotateZ(-90deg) translateY(-100%) translateX(-40%);
+    display: block;
+  }
+}
+.element4 {
+  color: #fff;
+  width: 60px;
+  //height:200px;
+  position: absolute;
+  left: 30px;
+  top: 65px;
+}
+.smallerThan4 {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform: translateY(0%) translateX(-100%);
+  display: none;
+}
+.biggerThan4 {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform: translateY(0%) translateX(100%);
+  display: none;
+  //transform: translateY(-50px);
+}
+.number4 {
+  position: absolute;
+  width: 100%;
+  font-size: 6px;
+  transform: rotateZ(-90deg) translateY(-100%) translateX(50%);
+  display: none;
+}
+</style>
+<style lang="less" scoped>
+// .element {
+//     width: 320px;
+//     height: 160px;
+//     box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
+//     border: 1px solid rgba(127,255,255,0.25);
+//     font-family: Helvetica, sans-serif;
+//     text-align: center;
+//     line-height: normal;
+//     cursor: default;
+//   }
+
+//   .element:hover {
+//     box-shadow: 0px 0px 12px rgba(0,255,255,0.75);
+//     border: 1px solid rgba(127,255,255,0.75);
+//   }
+
+//     .element .symbol {
+//       position: absolute;
+//       top: 40px;
+//       left: 0px;
+//       right: 0px;
+//       font-size: 60px;
+//       font-weight: bold;
+//       color: rgba(255,255,255,0.75);
+//       text-shadow: 0 0 10px rgba(0,255,255,0.95);
+//     }
+
+#myRange {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-top: 300px;
+}
+.introduce {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  .father {
+    width: 500px;
+    height: 10px;
+    border-radius: 5px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+  }
+  .father span {
+    color: #fff;
+    position: absolute;
+    right: -55px;
+    top: 0;
+    line-height: 10px;
+    display: block;
+    z-index: 1000;
+  }
+  .son {
+    width: 0px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: #07a8eb;
+  }
+  .tab {
+    z-index: 1;
+    position: absolute;
+    right: 0;
+    top: 240px;
+    width: 300px;
+    height: 500px;
+    ul {
+      li {
+        height: 62px;
+        width: 100%;
+        margin-bottom: 50px;
+        line-height: 62px;
+        font-size: 20px;
+        padding-left: 20px;
+        box-sizing: border-box;
+        color: #fff;
+        background: url("../assets/images/introduce_bgc.png") no-repeat;
+        background-size: 100% 100%;
+        position: relative;
+        cursor: pointer;
+        div {
+          width: 40px;
+          height: 100%;
+          position: absolute;
+          left: -10px;
+          box-sizing: border-box;
+          background: url("../assets/images/introduce_line.png") no-repeat;
+          background-size: 100% 100%;
+        }
+        i {
+          font-size: 25px;
+          line-height: 62px;
+          margin: 0 20px;
+        }
+        strong {
+          line-height: 62px;
+        }
+      }
+    }
+  }
+}
+</style>
